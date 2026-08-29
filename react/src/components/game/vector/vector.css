@@ -1,0 +1,466 @@
+/* ════════════════════════════════════════════════════════════════
+   Vector — visual system (Pro Tactical Command Deck)
+   Scoped under .vector-game so it can live inside the SPA without
+   touching the warm bento commerce theme. The game world is dark
+   navy; the store world stays warm cream. That contrast is the point.
+   ════════════════════════════════════════════════════════════════ */
+
+.vector-game {
+  --v-bg: #0E2739;
+  --v-panel: #163B54;
+  --v-panel-2: #1B4562;
+  --v-grid-line: rgba(234,242,244,0.11);
+  --v-grid-line-strong: rgba(234,242,244,0.22);
+  --v-ink: #EAF2F4;
+  --v-ink-dim: #96B3C1;
+  --v-ink-faint: #6C8B9A;
+  --v-blocked: #4C7086;
+  --v-legal: #FF8C42;
+  --v-legal-glow: rgba(255,140,66,0.55);
+  --v-success: #6FD9A6;
+  --v-success-glow: rgba(111,217,166,0.5);
+  --v-gold: #FDB827;
+  --v-font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --v-font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(16px, 3vw, 36px) 16px 40px;
+  background:
+    linear-gradient(var(--v-grid-line) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(90deg, var(--v-grid-line) 1px, transparent 1px) 0 0 / 28px 28px,
+    var(--v-bg);
+  color: var(--v-ink);
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.vector-game .eyebrow {
+  font-family: var(--v-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--v-ink-faint);
+}
+
+.vector-game h1 {
+  font-family: var(--v-font-display);
+  font-weight: 700;
+  font-size: clamp(22px, 5vw, 30px);
+  margin: 2px 0 4px;
+  letter-spacing: -0.01em;
+}
+
+.vector-game .sub {
+  font-size: 13px;
+  color: var(--v-ink-dim);
+  max-width: 480px;
+  text-align: center;
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+
+.vector-game header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* ── Desktop Pro Layout ────────────────────────────────────────── */
+.vector-game .deck-layout {
+  width: 100%;
+  max-width: 960px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .vector-game .deck-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    align-items: start;
+    gap: 32px;
+  }
+}
+
+.vector-game .game-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.vector-game .command-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.vector-game .command-panel {
+  background: var(--v-panel);
+  border: 1px solid var(--v-grid-line-strong);
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 8px 24px -6px rgba(0,0,0,0.35);
+}
+
+.vector-game .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.vector-game .panel-title {
+  font-family: var(--v-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--v-ink-faint);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vector-game .quota-bar-wrap {
+  background: var(--v-panel-2);
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.vector-game .quota-bar-fill {
+  background: linear-gradient(90deg, #FDB827, #FF8C42);
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.vector-game .streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(253, 184, 39, 0.12);
+  border: 1px solid rgba(253, 184, 39, 0.35);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-family: var(--v-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--v-gold);
+}
+
+/* ── HUD ────────────────────────────────────────────────────────── */
+.vector-game .hud {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--v-font-mono);
+  font-size: 12px;
+  color: var(--v-ink-dim);
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: var(--v-panel);
+  border: 1px solid var(--v-grid-line);
+  padding: 8px 16px;
+  border-radius: 999px;
+}
+.vector-game .hud b { color: var(--v-ink); font-weight: 600; }
+.vector-game .hud .divider { width: 1px; height: 12px; background: var(--v-grid-line-strong); }
+
+.vector-game #board-wrap { position: relative; padding: 18px; }
+.vector-game .corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--v-ink-faint);
+  border-style: solid;
+  border-width: 0;
+}
+.vector-game .corner.tl { top: 0; left: 0; border-top-width: 2px; border-left-width: 2px; }
+.vector-game .corner.tr { top: 0; right: 0; border-top-width: 2px; border-right-width: 2px; }
+.vector-game .corner.bl { bottom: 0; left: 0; border-bottom-width: 2px; border-left-width: 2px; }
+.vector-game .corner.br { bottom: 0; right: 0; border-bottom-width: 2px; border-right-width: 2px; }
+
+.vector-game #board {
+  display: grid;
+  gap: 4px;
+  background: var(--v-panel);
+  border: 1px solid var(--v-grid-line-strong);
+  border-radius: 8px;
+  padding: 8px;
+  width: min(84vw, 56vh, 440px);
+  aspect-ratio: 1 / 1;
+}
+
+.vector-game .cell {
+  position: relative;
+  background: var(--v-panel-2);
+  border-radius: 4px;
+}
+
+.vector-game button.arrow {
+  all: unset;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: transform .15s ease;
+}
+.vector-game button.arrow:focus-visible {
+  outline: 2px solid var(--v-ink);
+  outline-offset: 2px;
+}
+.vector-game button.arrow svg { width: 60%; height: 60%; transition: filter .15s ease; }
+.vector-game button.arrow .tri { fill: var(--v-blocked); transition: fill .18s ease; }
+
+.vector-game button.arrow.legal .tri { fill: var(--v-legal); }
+.vector-game button.arrow.legal { animation: v-pulse 1.6s ease-in-out infinite; }
+@keyframes v-pulse {
+  0%, 100% { filter: drop-shadow(0 0 0 var(--v-legal-glow)); }
+  50% { filter: drop-shadow(0 0 8px var(--v-legal-glow)); }
+}
+
+.vector-game .cell.hoverpath { background: rgba(255,140,66,0.16); }
+.vector-game .cell.hoverpath-blocked { background: rgba(76,112,134,0.22); }
+
+.vector-game button.arrow.denied { animation: v-shake .32s ease; }
+@keyframes v-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.vector-game button.arrow.leaving-up { animation: v-exitUp .32s ease forwards; }
+.vector-game button.arrow.leaving-down { animation: v-exitDown .32s ease forwards; }
+.vector-game button.arrow.leaving-left { animation: v-exitLeft .32s ease forwards; }
+.vector-game button.arrow.leaving-right { animation: v-exitRight .32s ease forwards; }
+@keyframes v-exitUp { to { transform: translateY(-220%); opacity: 0; } }
+@keyframes v-exitDown { to { transform: translateY(220%); opacity: 0; } }
+@keyframes v-exitLeft { to { transform: translateX(-220%); opacity: 0; } }
+@keyframes v-exitRight { to { transform: translateX(220%); opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .vector-game button.arrow.legal { animation: none; }
+  .vector-game button.arrow.denied { animation: none; }
+  .vector-game button.arrow.leaving-up,
+  .vector-game button.arrow.leaving-down,
+  .vector-game button.arrow.leaving-left,
+  .vector-game button.arrow.leaving-right { animation: v-fadeOut .2s ease forwards; }
+  @keyframes v-fadeOut { to { opacity: 0; } }
+}
+
+.vector-game #controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.vector-game button.btn {
+  font-family: var(--v-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--v-ink);
+  background: var(--v-panel-2);
+  border: 1px solid var(--v-grid-line-strong);
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all .15s ease;
+}
+.vector-game button.btn:hover { border-color: var(--v-ink-faint); background: rgba(27,69,98,0.85); }
+.vector-game button.btn:active { transform: translateY(1px); }
+
+.vector-game .kbd-hint {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--v-grid-line-strong);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 9px;
+  color: var(--v-ink-dim);
+}
+
+/* ── Level Matrix Grid ─────────────────────────────────────────── */
+.vector-game .level-matrix {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.vector-game .matrix-btn {
+  all: unset;
+  cursor: pointer;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--v-font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  background: var(--v-panel-2);
+  border: 1px solid var(--v-grid-line-strong);
+  color: var(--v-ink-dim);
+  position: relative;
+  transition: all .15s ease;
+}
+.vector-game .matrix-btn:hover:not(:disabled) {
+  border-color: var(--v-gold);
+  color: var(--v-ink);
+}
+.vector-game .matrix-btn.current {
+  border-color: var(--v-legal);
+  background: rgba(255,140,66,0.18);
+  color: var(--v-legal);
+  box-shadow: 0 0 10px rgba(255,140,66,0.25);
+}
+.vector-game .matrix-btn.done {
+  background: rgba(111,217,166,0.12);
+  border-color: var(--v-success);
+  color: var(--v-success);
+}
+.vector-game .matrix-btn.locked {
+  color: var(--v-ink-faint);
+  cursor: not-allowed;
+  opacity: .4;
+}
+.vector-game .matrix-btn .best-time {
+  font-size: 8px;
+  opacity: 0.8;
+  margin-top: 1px;
+}
+
+/* ── Win Overlay ────────────────────────────────────────────────── */
+.vector-game .win-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(9,25,37,0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+  padding: 20px;
+  z-index: 80;
+  backdrop-filter: blur(4px);
+}
+.vector-game .win-overlay.show { opacity: 1; pointer-events: auto; }
+.vector-game .win-card {
+  background: var(--v-panel);
+  border: 1px solid var(--v-grid-line-strong);
+  border-radius: 14px;
+  padding: 28px 32px;
+  text-align: center;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6);
+}
+.vector-game .win-card .tag {
+  font-family: var(--v-font-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  color: var(--v-success);
+  text-transform: uppercase;
+}
+.vector-game .win-card h2 {
+  font-family: var(--v-font-display);
+  margin: 6px 0 14px;
+  font-size: 24px;
+}
+.vector-game .win-stats {
+  font-family: var(--v-font-mono);
+  font-size: 12px;
+  color: var(--v-ink-dim);
+  line-height: 1.8;
+  margin-bottom: 16px;
+  background: var(--v-panel-2);
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--v-grid-line);
+}
+.vector-game .win-stats b { color: var(--v-ink); }
+.vector-game .win-card .btn-gold {
+  font-family: var(--v-font-mono);
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #0E2739;
+  background: var(--v-gold);
+  border: 1px solid var(--v-gold);
+  padding: 11px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all .15s ease;
+}
+.vector-game .win-card .btn-gold:hover { filter: brightness(1.08); box-shadow: 0 4px 14px rgba(253,184,39,0.4); }
+.vector-game .win-card .btn-gold:active { transform: translateY(1px); }
+.vector-game .win-card .btn-ghost {
+  font-family: var(--v-font-mono);
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--v-ink-dim);
+  background: transparent;
+  border: none;
+  padding: 9px 10px;
+  cursor: pointer;
+}
+.vector-game .win-card .btn-ghost:hover { color: var(--v-ink); }
+
+.vector-game footer {
+  margin-top: 26px;
+  font-family: var(--v-font-mono);
+  font-size: 10.5px;
+  color: var(--v-ink-faint);
+  text-align: center;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.vector-game .back-pill {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 70;
+  font-family: var(--v-font-mono);
+  font-size: 11px;
+  letter-spacing: .08em;
+  color: var(--v-ink-dim);
+  background: rgba(22,59,84,0.85);
+  border: 1px solid var(--v-grid-line-strong);
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  backdrop-filter: blur(8px);
+}
+.vector-game .back-pill:hover { color: var(--v-ink); border-color: var(--v-ink-faint); }
+
+.vector-game .earn-note {
+  font-family: var(--v-font-mono);
+  font-size: 12px;
+  color: var(--v-success);
+  margin-bottom: 12px;
+}
