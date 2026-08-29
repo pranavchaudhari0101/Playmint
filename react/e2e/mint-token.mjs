@@ -76,7 +76,7 @@ if (!jwt) {
   console.log('no token from Clerk session');
   process.exit(1);
 }
-fs.writeFileSync('../../worker/test-token.txt', jwt);
+fs.writeFileSync('../worker/test-token.txt', jwt);
 console.log('JWT saved to worker/test-token.txt');
 
 await browser.close();
