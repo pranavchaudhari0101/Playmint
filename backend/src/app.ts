@@ -4,7 +4,6 @@ import helmet from 'helmet';
 import { config } from './config';
 import { ApiError } from './errors';
 import { healthCheck } from './db';
-import { authRouter } from './routes/auth.routes';
 import { walletRouter } from './routes/wallet.routes';
 import { catalogRouter } from './routes/catalog.routes';
 import { checkoutRouter } from './routes/checkout.routes';
@@ -36,7 +35,6 @@ export function createApp(): express.Express {
     res.status(dbUp ? 200 : 503).json({ status: dbUp ? 'ok' : 'degraded', db: dbUp });
   });
 
-  app.use('/api/auth', authRouter);
   app.use('/api/wallet', walletRouter);
   app.use('/api/game', gameRouter);
   app.use('/api/catalog', catalogRouter);

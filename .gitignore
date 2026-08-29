@@ -21,6 +21,20 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.dev.vars
+.dev.vars.*
+
+# Secrets / tokens (never commit)
+test-token.txt
+
+# Platform CLI state
+.neon
+.vercel/
+.wrangler/
+
+# Dev server artifacts
+*.pid
+test-results/
 
 # OS files
 .DS_Store

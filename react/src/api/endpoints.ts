@@ -7,7 +7,6 @@ import type {
   AdminProductListResult,
   AdminStats,
   AdminUserListResult,
-  AuthResult,
   Category,
   CatalogProduct,
   CreateOrderResult,
@@ -15,7 +14,6 @@ import type {
   EarnSource,
   GoalView,
   LedgerListResult,
-  MeResult,
   OrderListResult,
   OrderStatus,
   OrderView,
@@ -31,25 +29,6 @@ import type {
 
 /** Typed surface over the backend routes. One function per endpoint. */
 export const api = {
-  // ── Auth ──────────────────────────────────────────────────────────
-  auth: {
-    signup: (email: string, password: string, displayName?: string) =>
-      request<AuthResult>('/auth/signup', {
-        method: 'POST',
-        body: { email, password, ...(displayName ? { displayName } : {}) },
-        silentUnauthorized: true,
-      }),
-
-    login: (email: string, password: string) =>
-      request<AuthResult>('/auth/login', {
-        method: 'POST',
-        body: { email, password },
-        silentUnauthorized: true,
-      }),
-
-    me: () => request<MeResult>('/auth/me'),
-  },
-
   // ── Wallet ────────────────────────────────────────────────────────
   wallet: {
     get: () => request<WalletState>('/wallet'),

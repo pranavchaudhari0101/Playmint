@@ -1,14 +1,14 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/state/AuthContext';
+import { useAuth as useClerkAuth } from '@clerk/react';
 
-/** Blocks a route until a session exists, remembering where the user was headed. */
+/** Blocks a route until a Clerk session exists, remembering where the user was headed. */
 export const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { isLoaded, isSignedIn } = useClerkAuth();
   const location = useLocation();
 
-  if (loading) return <FullPageSpinner />;
-  if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  if (!isLoaded) return <FullPageSpinner />;
+  if (!isSignedIn) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   return <>{children}</>;
 };
 

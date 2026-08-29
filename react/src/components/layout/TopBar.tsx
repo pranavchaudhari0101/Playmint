@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { UserButton } from '@clerk/react';
 import { useAuth } from '../../state/AuthContext';
 import { useCart } from '../../state/CartContext';
 import { formatSparks } from '../../lib/money';
 
 export const TopBar: React.FC = () => {
-  const { wallet, user, isAdmin, logout } = useAuth();
+  const { wallet, user } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
 
@@ -28,9 +29,7 @@ export const TopBar: React.FC = () => {
           ⚡ {formatSparks(wallet.balance)}
         </button>
 
-        <button className="ghost" onClick={logout} title="Log out">
-          ⏏
-        </button>
+        <UserButton />
       </div>
     </header>
   );

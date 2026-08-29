@@ -4,6 +4,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { ProtectedRoute } from '@/components/RouteGuards';
 import { Toaster } from '@/components/ui/toast';
 import { Login } from '@/screens/Auth/Login';
+import { Signup } from '@/screens/Auth/Signup';
 import { GameHome } from '@/screens/GameHome';
 import { EarnMoment } from '@/screens/EarnMoment';
 import { StoreHome } from '@/screens/StoreHome';
@@ -32,7 +33,9 @@ const Player: React.FC<{ children: React.ReactNode; chrome?: boolean }> = ({
 export const App: React.FC = () => (
   <>
     <Routes>
-      <Route path="/login" element={<Login />} />
+      {/* Clerk handles the full auth flow on these routes (incl. /login/factor-one etc.). */}
+      <Route path="/login/*" element={<Login />} />
+      <Route path="/signup/*" element={<Signup />} />
 
       {/* ── Player app ────────────────────────────────────────────── */}
       <Route path="/" element={<Player><GameHome /></Player>} />

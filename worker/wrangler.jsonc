@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "playmint-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "NODE_ENV": "development",
+    "CLERK_AUTHORIZED_PARTIES": "http://localhost:5173,http://localhost:4173",
+    "WELCOME_BONUS_SPARKS": "2500",
+    "MAX_EARN_PER_EVENT": "2500",
+    "PAYMENT_PROVIDER": "mock"
+  }
+}

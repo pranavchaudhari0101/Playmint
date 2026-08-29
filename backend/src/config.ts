@@ -8,23 +8,34 @@ function required(name: string): string {
   return value;
 }
 
+const clientOrigin = process.env.CLIENT_ORIGIN ?? 'http://localhost:5173';
+
 export const config = {
   env: process.env.NODE_ENV ?? 'development',
   isProd: process.env.NODE_ENV === 'production',
   port: parseInt(process.env.PORT ?? '4000', 10),
-  clientOrigin: process.env.CLIENT_ORIGIN ?? 'http://localhost:5173',
+  clientOrigin,
 
-  db: {
-    user: required('DB_USER'),
-    host: required('DB_HOST'),
-    port: parseInt(process.env.DB_PORT ?? '5432', 10),
-    database: required('DB_NAME'),
-    password: required('DB_PASSWORD'),
-  },
+  db: process.env.DATABASE_URL
+    ? {
+        /** Full connection string (Neon, etc.) — takes precedence over the individual vars. */
+        connectionString: process.env.DATABASE_URL,
+      }
+    : {
+        user: required('DB_USER'),
+        host: required('DB_HOST'),
+        port: parseInt(process.env.DB_PORT ?? '5432', 10),
+        database: required('DB_NAME'),
+        password: required('DB_PASSWORD'),
+      },
 
-  jwt: {
-    secret: required('JWT_SECRET'),
-    expiresIn: process.env.JWT_EXPIRES_IN ?? '7d',
+  clerk: {
+    secretKey: required('CLERK_SECRET_KEY'),
+    /** Comma-separated list of frontend origins allowed to use our session tokens (azp check). */
+    authorizedParties: (process.env.CLERK_AUTHORIZED_PARTIES ?? clientOrigin)
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean),
   },
 
   economy: {

@@ -1,16 +1,25 @@
-import { Pool, PoolClient } from 'pg';
+import { Pool, PoolClient, PoolConfig } from 'pg';
 import { config } from './config';
 
-export const pool = new Pool({
-  user: config.db.user,
-  host: config.db.host,
-  port: config.db.port,
-  database: config.db.database,
-  password: config.db.password,
+const poolOptions: PoolConfig = {
   max: 20,
   idleTimeoutMillis: 30_000,
-  connectionTimeoutMillis: 5_000,
-});
+  // Neon computes auto-resume from suspension; allow for the cold start.
+  connectionTimeoutMillis: config.db.connectionString ? 15_000 : 5_000,
+};
+
+export const pool = new Pool(
+  config.db.connectionString
+    ? { ...poolOptions, connectionString: config.db.connectionString }
+    : {
+        ...poolOptions,
+        user: config.db.user,
+        host: config.db.host,
+        port: config.db.port,
+        database: config.db.database,
+        password: config.db.password,
+      },
+);
 
 /**
  * Runs `fn` inside a single database transaction.

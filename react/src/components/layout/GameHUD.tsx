@@ -1,11 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import {
-  LogOut,
-  ShieldCheck,
-  ShoppingCart,
-  TerminalSquare,
-} from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
+import { UserButton } from '@clerk/react';
 import { useAuth } from '@/state/AuthContext';
 import { useCart } from '@/state/CartContext';
 import { SparkCounter } from '@/components/system/SparkCounter';
@@ -23,7 +19,7 @@ const NAV_ITEMS = [
  * Rounded pill badge logo · Center segmented pill menu · Right action capsules.
  */
 export const GameHUD: React.FC = () => {
-  const { wallet, user, isAdmin, logout } = useAuth();
+  const { wallet } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
@@ -98,23 +94,14 @@ export const GameHUD: React.FC = () => {
             <SparkCounter value={wallet.balance} compact />
           </button>
 
-          {/* User profile avatar / logout */}
-          <div className="flex items-center gap-1.5 rounded-full border border-[#E7DFD2] bg-white/90 p-1 shadow-sm">
-            <div
-              className="flex h-7 w-7 items-center justify-center rounded-full bg-[#1C1F22] text-[0.7rem] font-bold text-[#FDB827]"
-              title={user?.displayName || user?.email || 'Player'}
-            >
-              {user?.displayName ? user.displayName.slice(0, 1).toUpperCase() : 'P'}
-            </div>
-            <button
-              className="flex h-7 w-7 items-center justify-center rounded-full text-[#9B9489] hover:bg-[#FEE2E2] hover:text-[#EF4444] transition-colors"
-              onClick={logout}
-              aria-label="Log out"
-              title="Log out"
-            >
-              <LogOut size={14} />
-            </button>
-          </div>
+          {/* Clerk profile avatar + sign-out (redirect set via ClerkProvider) */}
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: 'h-9 w-9 rounded-full border border-[#E7DFD2] shadow-sm',
+              },
+            }}
+          />
         </div>
       </div>
     </header>

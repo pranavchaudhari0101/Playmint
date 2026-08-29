@@ -22,17 +22,6 @@ export interface WalletState {
   lifetimeSpent: number;
 }
 
-export interface AuthResult {
-  user: PublicUser;
-  token: string;
-  walletBalance: number;
-}
-
-export interface MeResult {
-  user: PublicUser;
-  wallet: WalletState;
-}
-
 // ─── Catalog ────────────────────────────────────────────────────────
 
 export interface Category {

@@ -1,6 +1,5 @@
-import { PoolClient } from 'pg';
 import { config } from '../config';
-import { query, withTransaction } from '../db';
+import { query, withTransaction, DBClient } from '../db';
 import { ledgerService } from './ledgerService';
 
 export interface PublicUser {
@@ -71,7 +70,7 @@ export const authService = {
     displayName: string | null,
   ): Promise<PublicUser> {
     try {
-      return await withTransaction(async (client: PoolClient) => {
+      return await withTransaction(async (client: DBClient) => {
         const res = await client.query(
           `INSERT INTO users (email, password_hash, role, display_name, clerk_user_id)
            VALUES ($1, NULL, 'user', $2, $3)

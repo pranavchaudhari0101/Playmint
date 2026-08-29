@@ -1,23 +1,23 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useUser } from '@clerk/react';
 import { api } from '../api/endpoints';
-import { onUnauthorized, setToken, getToken } from '../api/client';
 import type { PublicUser, WalletState } from '../api/types';
 
 /**
- * Holds the session (user + JWT) and the wallet, which is the one piece of
- * server state nearly every screen needs. Wallet updates flow through here
- * so the top bar, slider bounds and success screens never disagree.
+ * Session + wallet context. Identity comes from Clerk (useUser); the wallet
+ * is the one piece of server state nearly every screen needs. Wallet updates
+ * flow through here so the top bar, slider bounds and success screens never
+ * disagree.
  */
+
+type ClerkUser = NonNullable<ReturnType<typeof useUser>['user']>;
 
 interface AuthContextValue {
   user: PublicUser | null;
   wallet: WalletState;
-  /** True until the initial /auth/me probe settles. */
+  /** True until Clerk settles the session state. */
   loading: boolean;
   isAdmin: boolean;
-  login(email: string, password: string): Promise<PublicUser>;
-  signup(email: string, password: string, displayName?: string): Promise<PublicUser>;
-  logout(): void;
   refreshWallet(): Promise<void>;
   /** Applies a wallet the server already returned, avoiding a refetch. */
   setWallet(wallet: WalletState): void;
@@ -27,96 +27,57 @@ const EMPTY_WALLET: WalletState = { balance: 0, lifetimeEarned: 0, lifetimeSpent
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function toPublicUser(clerkUser: ClerkUser): PublicUser {
+  const role =
+    (clerkUser.publicMetadata as { role?: unknown }).role === 'admin' ? 'admin' : 'user';
+  return {
+    id: clerkUser.id,
+    email: clerkUser.primaryEmailAddress?.emailAddress ?? '',
+    role,
+    displayName: clerkUser.fullName ?? clerkUser.username ?? null,
+    createdAt: clerkUser.createdAt ? new Date(clerkUser.createdAt).toISOString() : '',
+  };
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<PublicUser | null>(null);
+  const { user: clerkUser, isLoaded, isSignedIn } = useUser();
   const [wallet, setWalletState] = useState<WalletState>(EMPTY_WALLET);
-  const [loading, setLoading] = useState(true);
 
-  // Restore the session from a stored token on first mount.
+  const user = useMemo(() => (clerkUser ? toPublicUser(clerkUser) : null), [clerkUser]);
+
+  // Pull the wallet whenever a Clerk session appears; drop it on sign-out.
   useEffect(() => {
-    let cancelled = false;
-
-    if (!getToken()) {
-      setLoading(false);
+    if (!isLoaded) return;
+    if (!isSignedIn) {
+      setWalletState(EMPTY_WALLET);
       return;
     }
-
-    api.auth
-      .me()
-      .then((result) => {
-        if (cancelled) return;
-        setUser(result.user);
-        setWalletState(result.wallet);
+    let cancelled = false;
+    api.wallet
+      .get()
+      .then((next) => {
+        if (!cancelled) setWalletState(next);
       })
-      .catch(() => {
-        // Expired or invalid token — client.ts has already cleared it.
-        if (!cancelled) setUser(null);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
+      .catch(() => undefined);
     return () => {
       cancelled = true;
     };
-  }, []);
-
-  // A 401 from any call drops the session.
-  useEffect(
-    () =>
-      onUnauthorized(() => {
-        setUser(null);
-        setWalletState(EMPTY_WALLET);
-      }),
-    [],
-  );
+  }, [isLoaded, isSignedIn]);
 
   const refreshWallet = useCallback(async () => {
-    const next = await api.wallet.get();
-    setWalletState(next);
-  }, []);
-
-  const login = useCallback(async (email: string, password: string) => {
-    const result = await api.auth.login(email, password);
-    setToken(result.token);
-    setUser(result.user);
-    // login returns only the balance; fetch the full wallet for lifetime totals.
-    setWalletState({ ...EMPTY_WALLET, balance: result.walletBalance });
-    void api.wallet.get().then(setWalletState).catch(() => undefined);
-    return result.user;
-  }, []);
-
-  const signup = useCallback(async (email: string, password: string, displayName?: string) => {
-    const result = await api.auth.signup(email, password, displayName);
-    setToken(result.token);
-    setUser(result.user);
-    setWalletState({
-      balance: result.walletBalance,
-      lifetimeEarned: result.walletBalance,
-      lifetimeSpent: 0,
-    });
-    return result.user;
-  }, []);
-
-  const logout = useCallback(() => {
-    setToken(null);
-    setUser(null);
-    setWalletState(EMPTY_WALLET);
+    setWalletState(await api.wallet.get());
   }, []);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
       wallet,
-      loading,
+      loading: !isLoaded,
       isAdmin: user?.role === 'admin',
-      login,
-      signup,
-      logout,
       refreshWallet,
       setWallet: setWalletState,
     }),
-    [user, wallet, loading, login, signup, logout, refreshWallet],
+    [user, wallet, isLoaded, refreshWallet],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
